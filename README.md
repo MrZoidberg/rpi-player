@@ -19,6 +19,8 @@ mpd
 mpc
 python-pyudev
 [python-mpd2](https://github.com/Mic92/python-mpd2)
+(optional)pip to install python-mpd2
+(optional)git
 
 ###Install
 1. Setup your RPi with Raspbian
