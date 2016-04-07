@@ -5,6 +5,16 @@ RPi-Player
 
 this is my modification of [The One Button Audiobook Player](http://blogs.fsfe.org/clemens/2012/10/30/the-one-button-audiobook-player/) written by Michael Clemens
 
+###TODO
+1. Schematics
+2. Restart service on halt
+3. Play sound on pause and next song press
+4. Organize playlist per directory and add support
+   for the long Next button press to navigate
+   between playlists (it will resolve problems when
+   there are several files per one audiobook)
+5. Make a docker image (ha-ha)
+
 ###Schematics
 TODO:
 ![Schematics]()
