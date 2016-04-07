@@ -1,0 +1,29 @@
+#!/bin/bash
+
+DAEMON=/usr/bin/python
+ARGS="/rpi-player/src/rpi_player.py"
+PIDFILE=/var/run/rpi_player.pid
+DAEMON_USER=root
+
+case "$1" in
+  start)
+    echo "Starting server"
+    /sbin/start-stop-daemon --start --background --pidfile $PIDFILE \
+        --user $DAEMON_USER \
+        -b --make-pidfile \
+        --chuid $DAEMON_USER \
+        --exec $DAEMON $ARGS
+    ;;
+  stop)
+    echo "Stopping server"
+    /sbin/start-stop-daemon --stop --pidfile $PIDFILE --verbose
+    gpio write 4 1
+    gpio write 5 1
+    ;;
+  *)
+    echo "Usage: /etc/init.d/rpi_player {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0
