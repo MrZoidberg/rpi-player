@@ -38,21 +38,27 @@ class GPIOHWD(object):
         return self._nextButton
 
     def setStatusLed(self, _led):
+        print("status led is set to ",_led)
         self._statusLed = _led
 
     def setPowerLed(self, _led):
+        print("power led is set to ",_led)
         self._powerLed = _led
 
     def setPlayButton(self, _button):
+        print("play button is set to ",_button)
         self._playButton = _button
 
     def setVolumeDownButton(self, _button):
+        print("volume down button is set to ",_button)
         self._volumeDownButton = _button
 
     def setVolumeUpButton(self, _button):
+        print("volume up button is set to ",_button)
         self._volumeUpButton = _button
 
     def setNextButton(self, _button):
+        print("volume next button is set to ",_button)
         self._nextButton = _button
 
     def flashLed(self, led, speed, time):
