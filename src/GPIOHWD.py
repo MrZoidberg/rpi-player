@@ -52,7 +52,7 @@ class GPIOHWD(object):
     def setVolumeUpButton(self, _button):
         self._volumeUpButton = _button
 
-    def setnextButton(self, _button):
+    def setNextButton(self, _button):
         self._nextButton = _button
 
     def flashLed(self, led, speed, time):

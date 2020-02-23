@@ -26,9 +26,10 @@ sudo /etc/init.d/rpi_player start
 
 ## Requirements
 
-mpd
-mpc
-python-pyudev
+sudo apt-get install mpd
+sudo apt-get install mpc
+sudo apt-get install python-mpd
+sudo apt-get install python-pyudev
 [python-mpd2](https://github.com/Mic92/python-mpd2)
 (optional)pip to install python-mpd2
 (optional)git

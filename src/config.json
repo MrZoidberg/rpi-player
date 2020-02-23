@@ -1,0 +1,14 @@
+{
+    "folders": {
+        "musicFolder": "/var/lib/mpd/music/",
+        "tagCacheFolder": "/var/lib/mpd/tag_cache"
+    },
+    "gpio" : {
+        "statusLed": 18,
+        "powerLed": 16,
+        "nextButton": 7,
+        "playButton": 11,
+        "volumeUpButton": 13,
+        "volumeDownButton": 15
+    }
+}

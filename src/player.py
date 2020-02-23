@@ -21,63 +21,63 @@ class Player(object):
             con_id = {'host': self.host, 'port': self.port}
             self.client.connect(**con_id)
         except SocketError:
-            print "mpd connection error"
-            print traceback.print_exc()
+            print("mpd connection error")
+            print(traceback.print_exc())
             return False
 
-        print self.client.status()
+        print(self.client.status())
         return True
 
     def disconnect(self):
         try:
             self.client.disconnect()
         except SocketError:
-            print "mpd connection error"
-            print traceback.print_exc()
+            print("mpd connection error")
+            print(traceback.print_exc())
 
     def getState(self):
         try:
             return self.client.status()["state"]
         except SocketError:
-            print "mpd connection error"
-            print traceback.print_exc()
+            print("mpd connection error")
+            print(traceback.print_exc())
 
     def getStats(self):
         try:
             return self.client.stats()
         except SocketError:
-            print "mpd connection error"
-            print traceback.print_exc()
+            print("mpd connection error")
+            print(traceback.print_exc())
 
     def playPause(self):
         state = self.client.status()["state"]
         if state == "stop" or state == "pause":
-            print "play"
+            print("play")
             self.client.play()
         else:
-            print "pause"
+            print("pause")
             self.client.pause()
 
     def increaseVolume(self, delta):
         volume = int(self.client.status()["volume"])
         volume += delta
-        print "settings volume to " + str(volume)
+        print("settings volume to " + str(volume))
         self.client.setvol(str(volume))
 
     def decreaseVolume(self, delta):
         volume = int(self.client.status()["volume"])
         volume -= delta
-        print "settings volume to " + str(volume)
+        print("settings volume to " + str(volume))
         self.client.setvol(str(volume))
 
     def nextSong(self):
-        print "next song"
+        print("next song")
         self.client.next()
 
     def prevSong(self):
-        print "prev song"
+        print("prev song")
         self.client.previous()
 
     def seekCur(self, time):
-        print "seek"
+        print("seek")
         self.client.seekcur(time)

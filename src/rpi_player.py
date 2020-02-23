@@ -1,9 +1,10 @@
+import json
 import os
-import traceback
 import time
+import traceback
+import pyudev
 from GPIOHWD import GPIOHWD
 from player import Player
-import pyudev
 
 
 def checkForUSBDevice(driveName):
@@ -40,15 +41,18 @@ def main():
     try:
         # parent = current_thread()
         hwd = GPIOHWD()
-        hwd.setStatusLed(18)
-        hwd.setPowerLed(16)
-        hwd.setnextButton(7)
-        hwd.setPlayButton(11)
-        hwd.setVolumeUpButton(13)
-        hwd.setVolumeDownButton(15)
-        hwd.setup()
+        with open('config.json') as json_file:
+            data = json.load(json_file)
+            print("status led is set to %s",data['gpio']['statusLed'])
+            hwd.setStatusLed(data['gpio']['statusLed'])
+            hwd.setPowerLed(16)
+            hwd.setNextButton(7)
+            hwd.setPlayButton(11)
+            hwd.setVolumeUpButton(13)
+            hwd.setVolumeDownButton(15)
+            hwd.setup()
 
-        print ("hardware setup complete")
+        print("hardware setup complete")
 
         player = Player()
         player.setPort('6600')
@@ -63,19 +67,19 @@ def main():
             pendrive = checkForUSBDevice(driveName)
 
             if pendrive != "":
-                print "new music detected"
+                print("new music detected")
                 hwd.flashLed(hwd.statusLed, 2, 50)
 
                 player.disconnect()
                 loadMusic(pendrive, "/mnt/usb/", "/var/lib/mpd/music/",
                                     "/var/lib/mpd/tag_cache")
                 player.connectMPD()
-                print "new music added"
+                print("new music added")
                 hwd.flashLed(hwd.statusLed, 0.5, 50)
-                print "waiting for usb drive unmount..."
+                print("waiting for usb drive unmount...")
                 while checkForUSBDevice(driveName) == pendrive:
                     time.sleep(0.5)
-                print "usb drive removed"
+                print("usb drive removed")
                 hwd.cleanup()
                 hwd.setup()
 
@@ -83,12 +87,12 @@ def main():
 
             if songsCount == 0:
                 if noSongsLed is False:
-                    print "no songs found"
+                    print("no songs found")
                     # hwd.flashLed(hwd.statusLed, 0.5, 50)
                     noSongsLed = True
             else:
                 if noSongsLed is True:
-                    print "songs found"
+                    print("songs found")
                     # hwd.stopFlash(hwd.statusLed)
                     noSongsLed = False
 
@@ -115,9 +119,9 @@ def main():
 
             time.sleep(0.1)
 
-        raw_input("Press Enter to exit...")
+        input("Press Enter to exit...")
     except KeyboardInterrupt:
-        print "exiting from button"
+        print("exiting from button")
     except Exception:
         traceback.print_exc()
 
