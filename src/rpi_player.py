@@ -54,14 +54,20 @@ def main():
             hwd.setVolumeDownButton(data['gpio']['volumeDownButton'])
             hwd.setup()
 
-        print("hardware setup complete")
+        
+        hwd.flashLed(hwd.powerLed, 2, 50)
+        hwd.flashLed(hwd.statusLed, 2, 50)
 
         player = Player()
         player.setPort('6600')
-        player.setHost('localhost')
+        player.setHost('localhost')        
         player.connectMPD()
 
+        time.sleep(5)
+        hwd.stopFlash(hwd.powerLed)
+        hwd.stopFlash(hwd.statusLed)
         hwd.updateLed(hwd.powerLed, True)
+        print("setup complete")
 
         noSongsLed = False
         playPressed = 0
