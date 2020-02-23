@@ -20,7 +20,8 @@ def checkForUSBDevice(driveName):
         return res
 
 
-def loadMusic(device, mountPoint, musicDir, tagCacheDir):
+def loadMusic(device, mountPoint, musicDir, tagCacheDir):        
+    os.system("mkdir -p "+mountPoint)
     os.system("mount "+device+" "+mountPoint)
     os.system("/etc/init.d/mpd stop")
     os.system("rm -rf "+musicDir+"*")
@@ -34,15 +35,17 @@ def loadMusic(device, mountPoint, musicDir, tagCacheDir):
 
 
 def main():
-    hwd = None
-    driveName = 'AUDIO'
+    hwd = None    
     print ("====> RPi player start")
 
     try:
         # parent = current_thread()
         hwd = GPIOHWD()
+        driveName = "AUDIO"
         with open('config.json') as json_file:
-            data = json.load(json_file)            
+            data = json.load(json_file)       
+            driveName = data['driveLabel']  
+            print("use drive with label", driveName)
             hwd.setStatusLed(data['gpio']['statusLed'])
             hwd.setPowerLed(data['gpio']['powerLed'])
             hwd.setNextButton(data['gpio']['nextButton'])
@@ -66,7 +69,7 @@ def main():
             pendrive = checkForUSBDevice(driveName)
 
             if pendrive != "":
-                print("new music detected")
+                print("new music detected on drive", pendrive)
                 hwd.flashLed(hwd.statusLed, 2, 50)
 
                 player.disconnect()

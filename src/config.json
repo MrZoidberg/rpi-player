@@ -1,4 +1,5 @@
 {
+    "driveLabel": "AUDIO",
     "folders": {
         "musicFolder": "/var/lib/mpd/music/",
         "tagCacheFolder": "/var/lib/mpd/tag_cache"
