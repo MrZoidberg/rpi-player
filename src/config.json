@@ -6,10 +6,10 @@
     },
     "gpio" : {
         "statusLed": 18,
-        "powerLed": 15,
+        "powerLed": 16,
         "nextButton": 7,
         "playButton": 11,
         "volumeUpButton": 13,
-        "volumeDownButton": 16
+        "volumeDownButton": 15
     }
 }

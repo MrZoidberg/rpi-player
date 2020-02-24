@@ -76,7 +76,7 @@ class GPIOHWD(object):
             pwm.stop()
 
     def updateLed(self, led, turnOn):
-        # self.stopFlash(led)
+        print("led " + str(led) + " is set to " + str(turnOn))
         if turnOn is True:
             GPIO.output(led, GPIO.LOW)
         else:
