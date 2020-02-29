@@ -70,6 +70,7 @@ def main():
         print("setup complete")
 
         noSongsLed = False
+        prevSongsLed = False
         playPressed = 0
         while(True):
             pendrive = checkForUSBDevice(driveName)
@@ -94,25 +95,20 @@ def main():
             songsCount = player.getStats()["songs"]
 
             if songsCount == 0:
-                if noSongsLed is False:
+                if noSongsLed is False & prevSongsLed is True:
                     print("no songs found")
-                    # hwd.flashLed(hwd.statusLed, 0.5, 50)
+                    hwd.flashLed(hwd.statusLed, 0.5, 50)
                     noSongsLed = True
+                    prevSongsLed = False
             else:
-                if noSongsLed is True:
+                if noSongsLed is True & prevSongsLed is False:
                     print("songs found")
-                    # hwd.stopFlash(hwd.statusLed)
+                    hwd.stopFlash(hwd.statusLed)
                     noSongsLed = False
+                    prevSongsLed = True
 
-                if hwd.getInput(hwd.playButton):
-                    playPressed += 1
-                    if playPressed == 15 and player.getState() == "play":
-                        # hwd.stopFlash(hwd.statusLed)
-                        player.seekCur(-60*3)
-                else:
-                    if playPressed > 0 and playPressed < 15:
-                        player.playPause()
-                    playPressed = 0
+                if hwd.isButtonPressed(hwd.playButton):
+                    player.playPause()
 
                 hwd.updateLed(hwd.statusLed, player.getState() == "play")
 
