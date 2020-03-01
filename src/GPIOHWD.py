@@ -1,7 +1,17 @@
 import RPi.GPIO as GPIO
+import time
+from enum import Flag, auto
+
+BUTTON_PRESS_DELTA = 1
+
+class ButtonState(Flag):
+    NOT_PRESSED = auto()
+    PRESSED = auto()
+    DOUBLE_PRESSED = auto()
+    AT_LEAST_TWICE_PRESSED = PRESSED | DOUBLE_PRESSED
 
 
-class GPIOHWD(object):
+class GPIOHWD(object): 
 
     def __init__(self,):
         print("GPIO version: " + GPIO.VERSION)
@@ -11,7 +21,8 @@ class GPIOHWD(object):
         self._volumeUpButton = -1
         self._volumeDownButton = -1
         self._nextButton = -1
-        self.flashes = dict()
+        self._flashes = dict()
+        self._times = dict.fromkeys(range(1,41), 0)
 
     @property
     def statusLed(self):
@@ -37,56 +48,67 @@ class GPIOHWD(object):
     def nextButton(self):
         return self._nextButton
 
-    def setStatusLed(self, _led):
-        print("status led is set to ",_led)
-        self._statusLed = _led
+    def setStatusLed(self, channel):
+        print("status led is set to ",channel)
+        self._statusLed = channel
 
-    def setPowerLed(self, _led):
-        print("power led is set to ",_led)
-        self._powerLed = _led
+    def setPowerLed(self, channel):
+        print("power led is set to ",channel)
+        self._powerLed = channel
 
-    def setPlayButton(self, _button):
-        print("play button is set to ",_button)
-        self._playButton = _button
+    def setPlayButton(self, channel):
+        print("play button is set to ",channel)
+        self._playButton = channel
 
-    def setVolumeDownButton(self, _button):
-        print("volume down button is set to ",_button)
-        self._volumeDownButton = _button
+    def setVolumeDownButton(self, channel):
+        print("volume down button is set to ",channel)
+        self._volumeDownButton = channel
 
-    def setVolumeUpButton(self, _button):
-        print("volume up button is set to ",_button)
-        self._volumeUpButton = _button
+    def setVolumeUpButton(self, channel):
+        print("volume up button is set to ",channel)
+        self._volumeUpButton = channel
 
-    def setNextButton(self, _button):
-        print("volume next button is set to ",_button)
-        self._nextButton = _button
+    def setNextButton(self, channel):
+        print("volume next button is set to ",channel)
+        self._nextButton = channel
 
-    def flashLed(self, led, speed, time):
-        self.stopFlash(led)
-        print("flashing led " + str(led) + " at freq " + str(speed) +
+    def flashLed(self, channel, speed, time):
+        self.stopFlash(channel)
+        print("flashing led " + str(channel) + " at freq " + str(speed) +
               " with duty " + str(time))
-        pwm = GPIO.PWM(led, speed)
+        pwm = GPIO.PWM(channel, speed)
         pwm.start(time)
-        self.flashes[led] = pwm
+        self._flashes[channel] = pwm
 
-    def stopFlash(self, led):
-        if led in self.flashes:
-            print("stop flashing led " + str(led))
-            pwm = self.flashes.pop(led, None)
+    def stopFlash(self, channel):
+        if channel in self._flashes:
+            print("stop flashing led " + str(channel))
+            pwm = self._flashes.pop(channel, None)
             pwm.stop()
 
-    def updateLed(self, led, turnOn):
+    def updateLed(self, channel, turnOn):
         #print("led " + str(led) + " is set to " + str(turnOn))
         if turnOn is True:
-            GPIO.output(led, GPIO.LOW)
+            GPIO.output(channel, GPIO.LOW)
         else:
-            GPIO.output(led, GPIO.HIGH)
+            GPIO.output(channel, GPIO.HIGH)
 
-    def isButtonPressed(self, led):
-        return GPIO.event_detected(led)
+    def isButtonPressed(self, channel):
+        isDetected = GPIO.event_detected(channel)
+        curTime = time.time()
+        lastTime = self._times[channel]
+        if isDetected is True:           
+            self._times[channel] = curTime
+            if curTime - lastTime < BUTTON_PRESS_DELTA:
+                return ButtonState.AT_LEAST_TWICE_PRESSED, BUTTON_PRESS_DELTA - (curTime - lastTime)          
+            return ButtonState.PRESSED, BUTTON_PRESS_DELTA - (curTime - lastTime)
+        
+        if curTime - lastTime > BUTTON_PRESS_DELTA and self._times[channel] != 0:
+            self._times[channel] = 0
+        return ButtonState.NOT_PRESSED, BUTTON_PRESS_DELTA - (curTime - lastTime)
 
-    def getInput(self, led):
-        return GPIO.input(led)
+    def getInput(self, channel) -> bool:
+        return GPIO.input(channel)
 
     def setup(self):
         GPIO.setmode(GPIO.BOARD)
@@ -96,8 +118,8 @@ class GPIOHWD(object):
 
         GPIO.setup(leds, GPIO.OUT)
         GPIO.setup(buttons, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.add_event_detect(self._playButton, GPIO.FALLING, bouncetime=200)
-        GPIO.add_event_detect(self._nextButton, GPIO.RISING)
+        GPIO.add_event_detect(self._playButton, GPIO.RISING, bouncetime=200)
+        GPIO.add_event_detect(self._nextButton, GPIO.RISING, bouncetime=200)
         GPIO.add_event_detect(self._volumeUpButton, GPIO.FALLING, bouncetime=200)
         GPIO.add_event_detect(self._volumeDownButton, GPIO.FALLING, bouncetime=200)
 

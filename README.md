@@ -27,10 +27,11 @@ sudo /etc/init.d/rpi_player start
 ## Requirements
 
 - [Python3](https://installvirtual.com/how-to-install-python-3-8-on-raspberry-pi-raspbian/)
-- sudo apt-get install -y mpd mpc
-- curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py
-- pip install pyudev python-mpd2 RPi.GPIO
-- (optional)sudo apt-get install -y git
+- ```sudo apt-get install -y mpd mpc```
+- make sure mpd is at least v0.21.20 or [compile it from source code](https://www.musicpd.org/doc/html/user.html)
+- ```curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py```
+- ```pip install pyudev python-mpd2 RPi.GPIO```
+- (optional)```sudo apt-get install -y git```
 
 ## Install
 

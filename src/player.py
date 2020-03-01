@@ -1,7 +1,8 @@
 from mpd import (MPDClient, CommandError)
 from socket import error as SocketError
 import traceback
-
+import time
+import os
 
 class Player(object):
 
@@ -35,9 +36,22 @@ class Player(object):
             print("mpd connection error")
             print(traceback.print_exc())
 
-    def getState(self):
+    def getState(self) -> str:
         try:
             return self.client.status()["state"]
+        except CommandError:
+            print("mpc command error")
+            print(traceback.print_exc()) 
+        except SocketError:
+            print("mpd connection error")
+            print(traceback.print_exc())
+    
+    def getStatus(self) -> dict:
+        try:
+            return self.client.status()
+        except CommandError:
+            print("mpc command error")
+            print(traceback.print_exc()) 
         except SocketError:
             print("mpd connection error")
             print(traceback.print_exc())
@@ -45,18 +59,41 @@ class Player(object):
     def getStats(self):
         try:
             return self.client.stats()
+        except CommandError:
+            print("mpc command error")
+            print(traceback.print_exc()) 
+        except SocketError:
+            print("mpd connection error")
+            print(traceback.print_exc())
+    
+    def play(self):        
+        try:
+            state = self.client.status()["state"]
+            if state == "stop" or state == "pause":
+                print("play")
+                self.client.play()
+        except CommandError:
+            print("mpc command error")
+            print(traceback.print_exc()) 
         except SocketError:
             print("mpd connection error")
             print(traceback.print_exc())
 
-    def playPause(self):
-        state = self.client.status()["state"]
-        if state == "stop" or state == "pause":
-            print("play")
-            self.client.play()
-        else:
-            print("pause")
-            self.client.pause()
+    def playPause(self):        
+        try:
+            state = self.client.status()["state"]
+            if state == "stop" or state == "pause":
+                print("play")
+                self.client.play()
+            else:
+                print("pause")
+                self.client.pause()
+        except CommandError:
+            print("mpc command error")
+            print(traceback.print_exc()) 
+        except SocketError:
+            print("mpd connection error")
+            print(traceback.print_exc())
 
     def increaseVolume(self, delta):
         volume = int(self.client.status()["volume"])
@@ -72,12 +109,40 @@ class Player(object):
 
     def nextSong(self):
         print("next song")
-        self.client.next()
+        try:
+            self.client.next()
+        except CommandError:
+            print("mpc command error")
+            print(traceback.print_exc()) 
+        except SocketError:
+            print("mpd connection error")
+            print(traceback.print_exc()) 
 
     def prevSong(self):
         print("prev song")
         self.client.previous()
 
+
     def seekCur(self, time):
         print("seek")
-        self.client.seekcur(time)
+        curSongPos = float(self.getStatus()["elapsed"])
+        print(curSongPos)
+        curSongPos += time 
+        self.client.seekcur(curSongPos)
+
+    def currentSongInfo(self) -> dict:
+        try:
+            return self.client.currentsong()
+        except CommandError:
+            print("mpc command error")
+            print(traceback.print_exc()) 
+        except SocketError:
+            print("mpd connection error")
+            print(traceback.print_exc())   
+
+
+    #def seekCur(self, delta):
+        #print("seek current. delta: " + delta)
+        #self.client.seekcur(delta)
+        #os.system("mpc seekthrough " + delta)
+        #time.sleep(2)
