@@ -74,6 +74,7 @@ def main():
         playPressed = 0
         playButtonState = ButtonState.NOT_PRESSED
         nextButtonState = ButtonState.NOT_PRESSED
+        btnStatus = ButtonState.NOT_PRESSED
 
         while(True):
             pendrive = checkForUSBDevice(driveName)
@@ -113,53 +114,40 @@ def main():
 
                 ### Next button
                 
-                btnStatus, delta = hwd.isButtonPressed(hwd.nextButton)
-                if ButtonState.PRESSED in btnStatus:                    
-                    if ButtonState.DOUBLE_PRESSED in btnStatus:                        
-                        nextButtonState = ButtonState.DOUBLE_PRESSED
-                    else:
-                        nextButtonState = ButtonState.PRESSED
-
-                if ButtonState.NOT_PRESSED in btnStatus and delta < 0:
-                    if nextButtonState is ButtonState.PRESSED:
-                        player.nextSong()
-                    if nextButtonState is ButtonState.DOUBLE_PRESSED:
-                        player.prevSong()
+                nextButtonState = hwd.isButtonPressed(hwd.nextButton)
+                if nextButtonState is ButtonState.PRESSED:
+                    player.nextSong()
+                if nextButtonState is ButtonState.DOUBLE_PRESSED:
+                    player.prevSong()
                     #hwd.clearButtonState(hwd.nextButton)
-                    nextButtonState = ButtonState.NOT_PRESSED
+                nextButtonState = ButtonState.NOT_PRESSED
 
                 ### Play button
 
-                btnStatus, delta = hwd.isButtonPressed(hwd.playButton)
-                if ButtonState.PRESSED in btnStatus:                    
-                    if ButtonState.DOUBLE_PRESSED in btnStatus:                        
-                        playButtonState = ButtonState.DOUBLE_PRESSED
-                    else:
-                        playButtonState = ButtonState.PRESSED
-
-                if ButtonState.NOT_PRESSED in btnStatus and delta < 0:
-                    if playButtonState is ButtonState.DOUBLE_PRESSED:
-                        player.seekCur(-15)
-                    if playButtonState is ButtonState.PRESSED:
-                        player.playPause()
-                    #hwd.clearButtonState(hwd.playButton)
-                    playButtonState = ButtonState.NOT_PRESSED
+                playButtonState = hwd.isButtonPressed(hwd.playButton)
+                if playButtonState is ButtonState.DOUBLE_PRESSED:
+                    player.seekCur(-15)
+                if playButtonState is ButtonState.PRESSED:
+                    player.playPause()
+                playButtonState = ButtonState.NOT_PRESSED
 
                 hwd.updateLed(hwd.statusLed, player.getState() == "play")
 
                 ### Volume up
 
-                btnStatus, delta = hwd.isButtonPressed(hwd.volumeUpButton)
+                btnStatus = hwd.isButtonPressed(hwd.volumeUpButton)
                 if ButtonState.PRESSED in btnStatus:
                     player.increaseVolume(5)
                     #hwd.clearButtonState(hwd.volumeUpButton)
+                btnStatus = ButtonState.NOT_PRESSED
 
                 ### Volume down
 
-                btnStatus, delta = hwd.isButtonPressed(hwd.volumeDownButton)
+                btnStatus = hwd.isButtonPressed(hwd.volumeDownButton)
                 if ButtonState.PRESSED in btnStatus:
                     player.decreaseVolume(5)
                     #hwd.clearButtonState(hwd.volumeDownButton)
+                btnStatus = ButtonState.NOT_PRESSED
 
             time.sleep(0.1)
 

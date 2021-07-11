@@ -24,7 +24,7 @@ case "$1" in
     gpio write 5 1
     ;;
   *)
-    echo "Usage: /etc/init.d/rpi_player {start|stop}"
+    echo "Usage: /etc/init.d/rpi-player {start|stop}"
     exit 1
     ;;
 esac

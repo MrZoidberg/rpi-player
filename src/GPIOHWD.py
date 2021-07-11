@@ -95,17 +95,14 @@ class GPIOHWD(object):
 
     def isButtonPressed(self, channel):
         isDetected = GPIO.event_detected(channel)
-        curTime = time.time()
-        lastTime = self._times[channel]
+        #curTime = time.time()        
+        #lastTime = self._times[channel]
         if isDetected is True:           
-            self._times[channel] = curTime
-            if curTime - lastTime < BUTTON_PRESS_DELTA:
-                return ButtonState.AT_LEAST_TWICE_PRESSED, BUTTON_PRESS_DELTA - (curTime - lastTime)          
-            return ButtonState.PRESSED, BUTTON_PRESS_DELTA - (curTime - lastTime)
+            if GPIO.wait_for_edge(channel, GPIO.RISING, timeout=2000):
+                return ButtonState.AT_LEAST_TWICE_PRESSED
+            return ButtonState.PRESSED
         
-        if curTime - lastTime > BUTTON_PRESS_DELTA and self._times[channel] != 0:
-            self._times[channel] = 0
-        return ButtonState.NOT_PRESSED, BUTTON_PRESS_DELTA - (curTime - lastTime)
+        return ButtonState.NOT_PRESSED
 
     def clearButtonState(self, channel):
         self._times[channel] = 0
@@ -123,8 +120,8 @@ class GPIOHWD(object):
         GPIO.setup(buttons, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.add_event_detect(self._playButton, GPIO.RISING, bouncetime=200)
         GPIO.add_event_detect(self._nextButton, GPIO.RISING, bouncetime=200)
-        GPIO.add_event_detect(self._volumeUpButton, GPIO.FALLING, bouncetime=200)
-        GPIO.add_event_detect(self._volumeDownButton, GPIO.FALLING, bouncetime=200)
+        GPIO.add_event_detect(self._volumeUpButton, GPIO.RISING, bouncetime=200)
+        GPIO.add_event_detect(self._volumeDownButton, GPIO.RISING, bouncetime=200)
 
         GPIO.output(self._powerLed, GPIO.HIGH)
         GPIO.output(self._statusLed, GPIO.LOW)
