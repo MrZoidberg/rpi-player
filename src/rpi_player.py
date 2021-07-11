@@ -136,7 +136,7 @@ def main():
                 ### Volume up
 
                 btnStatus = hwd.isButtonPressed(hwd.volumeUpButton)
-                if ButtonState.PRESSED in btnStatus:
+                if btnStatus is ButtonState.PRESSED:
                     player.increaseVolume(5)
                     #hwd.clearButtonState(hwd.volumeUpButton)
                 btnStatus = ButtonState.NOT_PRESSED
@@ -144,7 +144,7 @@ def main():
                 ### Volume down
 
                 btnStatus = hwd.isButtonPressed(hwd.volumeDownButton)
-                if ButtonState.PRESSED in btnStatus:
+                if btnStatus is ButtonState.PRESSED:
                     player.decreaseVolume(5)
                     #hwd.clearButtonState(hwd.volumeDownButton)
                 btnStatus = ButtonState.NOT_PRESSED

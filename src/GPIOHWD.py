@@ -104,6 +104,7 @@ class GPIOHWD(object):
                 if secondEventDetected is True:
                     print("detected 2nd button press " + str(channel))  
                     return ButtonState.DOUBLE_PRESSED                
+            print(" did not found 2nd button press " + str(channel))  
             return ButtonState.PRESSED
         
         return ButtonState.NOT_PRESSED
