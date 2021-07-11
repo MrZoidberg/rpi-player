@@ -125,7 +125,7 @@ def main():
                         player.nextSong()
                     if nextButtonState is ButtonState.DOUBLE_PRESSED:
                         player.prevSong()
-                    hwd.clearButtonState(hwd.nextButton)
+                    #hwd.clearButtonState(hwd.nextButton)
                     nextButtonState = ButtonState.NOT_PRESSED
 
                 ### Play button
@@ -138,11 +138,11 @@ def main():
                         playButtonState = ButtonState.PRESSED
 
                 if ButtonState.NOT_PRESSED in btnStatus and delta < 0:
-                    if nextButtonState is ButtonState.DOUBLE_PRESSED:
+                    if playButtonState is ButtonState.DOUBLE_PRESSED:
                         player.seekCur(-15)
                     if playButtonState is ButtonState.PRESSED:
                         player.playPause()
-                    hwd.clearButtonState(hwd.playButton)
+                    #hwd.clearButtonState(hwd.playButton)
                     playButtonState = ButtonState.NOT_PRESSED
 
                 hwd.updateLed(hwd.statusLed, player.getState() == "play")
@@ -152,14 +152,14 @@ def main():
                 btnStatus, delta = hwd.isButtonPressed(hwd.volumeUpButton)
                 if ButtonState.PRESSED in btnStatus:
                     player.increaseVolume(5)
-                    hwd.clearButtonState(hwd.volumeUpButton)
+                    #hwd.clearButtonState(hwd.volumeUpButton)
 
                 ### Volume down
 
                 btnStatus, delta = hwd.isButtonPressed(hwd.volumeDownButton)
                 if ButtonState.PRESSED in btnStatus:
                     player.decreaseVolume(5)
-                    hwd.clearButtonState(hwd.volumeDownButton)
+                    #hwd.clearButtonState(hwd.volumeDownButton)
 
             time.sleep(0.1)
 
