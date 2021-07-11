@@ -95,12 +95,13 @@ class GPIOHWD(object):
 
     def isButtonPressed(self, channel):
         isDetected = GPIO.event_detected(channel)
-        #curTime = time.time()        
-        #lastTime = self._times[channel]
+        curTime = time.time()                
         if isDetected is True:           
-            if GPIO.wait_for_edge(channel, GPIO.RISING, timeout=2000):
-                return ButtonState.AT_LEAST_TWICE_PRESSED
-            return ButtonState.PRESSED
+            while time.time() - curTime <= 2000:
+                secondEventDetected = GPIO.event_detected(channel)
+                if secondEventDetected is True:
+                    return ButtonState.AT_LEAST_TWICE_PRESSED
+                return ButtonState.PRESSED
         
         return ButtonState.NOT_PRESSED
 
