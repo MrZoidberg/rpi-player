@@ -98,11 +98,10 @@ class GPIOHWD(object):
         curTime = time.time()         
         
         if isDetected is False:
-            return ButtonState.NOT_PRESSED
-
-        print("isButtonPressed " + str(channel) + " detected: " + str(isDetected))
+            return ButtonState.NOT_PRESSED        
  
         if supportDoublePress is False & isDetected is True:
+            print("isButtonPressed " + str(channel) + " detected: ButtonState.PRESSED")
             return ButtonState.PRESSED
 
         if isDetected is True:                     
@@ -110,7 +109,9 @@ class GPIOHWD(object):
                 time.sleep(0.2)
                 secondEventDetected = GPIO.event_detected(channel)
                 if secondEventDetected is True:
+                    print("isButtonPressed " + str(channel) + " detected: ButtonState.DOUBLE_PRESSED")
                     return ButtonState.DOUBLE_PRESSED                
+            print("isButtonPressed " + str(channel) + " detected: ButtonState.PRESSED")
             return ButtonState.PRESSED
         
         return ButtonState.NOT_PRESSED
