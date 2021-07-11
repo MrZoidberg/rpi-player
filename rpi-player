@@ -1,17 +1,20 @@
 #!/bin/bash
 
-DAEMON=/usr/bin/python
+DAEMON=/usr/local/bin/python3.9
+DAEMON_DIR="/home/pi/rpi-player/src/"
 DAEMON_ARGS="/home/pi/rpi-player/src/rpi_player.py"
 PIDFILE=/var/run/rpi_player.pid
-DAEMON_USER=pi
+DAEMON_USER=root
 
 case "$1" in
   start)
     echo "Starting server"
-    /sbin/start-stop-daemon --start --background --pidfile $PIDFILE \
+    /sbin/start-stop-daemon --start --pidfile $PIDFILE \
+        --background \
         --user $DAEMON_USER \
         -b --make-pidfile \
         --chuid $DAEMON_USER \
+        --chdir $DAEMON_DIR \
         --startas /bin/bash -- -c "exec $DAEMON $DAEMON_ARGS > /var/log/rpi_player.log 2>&1"
     ;;
   stop)
