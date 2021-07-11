@@ -107,6 +107,9 @@ class GPIOHWD(object):
             self._times[channel] = 0
         return ButtonState.NOT_PRESSED, BUTTON_PRESS_DELTA - (curTime - lastTime)
 
+    def clearButtonState(self, channel):
+        self._times[channel] = 0
+
     def getInput(self, channel) -> bool:
         return GPIO.input(channel)
 

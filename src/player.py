@@ -98,13 +98,15 @@ class Player(object):
     def increaseVolume(self, delta):
         volume = int(self.client.status()["volume"])
         volume += delta
-        print("settings volume to " + str(volume))
+        volume = min(100, volume)
+        print("increasing volume to " + str(volume))
         self.client.setvol(str(volume))
 
     def decreaseVolume(self, delta):
         volume = int(self.client.status()["volume"])
         volume -= delta
-        print("settings volume to " + str(volume))
+        volume = max(0, volume)
+        print("decreasing volume to " + str(volume))
         self.client.setvol(str(volume))
 
     def nextSong(self):

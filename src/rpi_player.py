@@ -72,8 +72,8 @@ def main():
         noSongsLed = False
         prevSongsLed = False
         playPressed = 0
-        prevPlayButtonState = ButtonState.NOT_PRESSED
-        prevNextButtonState = ButtonState.NOT_PRESSED
+        playButtonState = ButtonState.NOT_PRESSED
+        nextButtonState = ButtonState.NOT_PRESSED
 
         while(True):
             pendrive = checkForUSBDevice(driveName)
@@ -81,7 +81,7 @@ def main():
             if pendrive != "":
                 print("new music detected on drive", pendrive)
                 hwd.flashLed(hwd.statusLed, 2, 50)
-
+                #player.stop()
                 player.disconnect()
                 loadMusic(pendrive, "/mnt/usb/", "/var/lib/mpd/music/",
                                     "/var/lib/mpd/tag_cache")
@@ -116,31 +116,34 @@ def main():
                 btnStatus, delta = hwd.isButtonPressed(hwd.nextButton)
                 if ButtonState.PRESSED in btnStatus:                    
                     if ButtonState.DOUBLE_PRESSED in btnStatus:                        
-                        prevNextButtonState = ButtonState.DOUBLE_PRESSED
+                        nextButtonState = ButtonState.DOUBLE_PRESSED
                     else:
-                        prevNextButtonState = ButtonState.PRESSED
+                        nextButtonState = ButtonState.PRESSED
 
                 if ButtonState.NOT_PRESSED in btnStatus and delta < 0:
-                    if prevNextButtonState is ButtonState.PRESSED:
+                    if nextButtonState is ButtonState.PRESSED:
                         player.nextSong()
-                    if prevNextButtonState is ButtonState.DOUBLE_PRESSED:
+                    if nextButtonState is ButtonState.DOUBLE_PRESSED:
                         player.prevSong()
-                    prevNextButtonState = ButtonState.NOT_PRESSED
+                    hwd.clearButtonState(hwd.nextButton)
+                    nextButtonState = ButtonState.NOT_PRESSED
 
                 ### Play button
 
                 btnStatus, delta = hwd.isButtonPressed(hwd.playButton)
                 if ButtonState.PRESSED in btnStatus:                    
-                    if ButtonState.DOUBLE_PRESSED in btnStatus:
-                        player.seekCur(-15)
-                        prevPlayButtonState = ButtonState.DOUBLE_PRESSED
+                    if ButtonState.DOUBLE_PRESSED in btnStatus:                        
+                        playButtonState = ButtonState.DOUBLE_PRESSED
                     else:
-                        prevPlayButtonState = ButtonState.PRESSED
+                        playButtonState = ButtonState.PRESSED
 
                 if ButtonState.NOT_PRESSED in btnStatus and delta < 0:
-                    if prevPlayButtonState is ButtonState.PRESSED:
+                    if nextButtonState is ButtonState.DOUBLE_PRESSED:
+                        player.seekCur(-15)
+                    if playButtonState is ButtonState.PRESSED:
                         player.playPause()
-                    prevPlayButtonState = ButtonState.NOT_PRESSED
+                    hwd.clearButtonState(hwd.playButton)
+                    playButtonState = ButtonState.NOT_PRESSED
 
                 hwd.updateLed(hwd.statusLed, player.getState() == "play")
 
@@ -148,13 +151,15 @@ def main():
 
                 btnStatus, delta = hwd.isButtonPressed(hwd.volumeUpButton)
                 if ButtonState.PRESSED in btnStatus:
-                    player.increaseVolume(2)
+                    player.increaseVolume(5)
+                    hwd.clearButtonState(hwd.volumeUpButton)
 
                 ### Volume down
 
                 btnStatus, delta = hwd.isButtonPressed(hwd.volumeDownButton)
                 if ButtonState.PRESSED in btnStatus:
-                    player.decreaseVolume(2) 
+                    player.decreaseVolume(5)
+                    hwd.clearButtonState(hwd.volumeDownButton)
 
             time.sleep(0.1)
 

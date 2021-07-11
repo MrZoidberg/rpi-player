@@ -1,9 +1,9 @@
 #!/bin/bash
 
 DAEMON=/usr/bin/python
-ARGS="/rpi-player/src/rpi_player.py"
+DAEMON_ARGS="/home/pi/rpi-player/src/rpi_player.py"
 PIDFILE=/var/run/rpi_player.pid
-DAEMON_USER=root
+DAEMON_USER=pi
 
 case "$1" in
   start)
@@ -12,7 +12,7 @@ case "$1" in
         --user $DAEMON_USER \
         -b --make-pidfile \
         --chuid $DAEMON_USER \
-        --exec $DAEMON $ARGS
+        --startas /bin/bash -- -c "exec $DAEMON $DAEMON_ARGS > /var/log/rpi_player.log 2>&1"
     ;;
   stop)
     echo "Stopping server"
