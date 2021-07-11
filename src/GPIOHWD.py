@@ -101,7 +101,7 @@ class GPIOHWD(object):
                 secondEventDetected = GPIO.event_detected(channel)
                 if secondEventDetected is True:
                     return ButtonState.DOUBLE_PRESSED
-                return ButtonState.PRESSED
+            return ButtonState.PRESSED
         
         return ButtonState.NOT_PRESSED
 
