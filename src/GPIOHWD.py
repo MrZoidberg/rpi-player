@@ -96,6 +96,9 @@ class GPIOHWD(object):
     def isButtonPressed(self, channel, supportDoublePress):
         isDetected = GPIO.event_detected(channel)
         curTime = time.time()         
+        
+        if isDetected is False:
+            return ButtonState.NOT_PRESSED
 
         print("isButtonPressed " + str(channel) + " detected: " + str(isDetected))
  
