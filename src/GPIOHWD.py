@@ -102,7 +102,7 @@ class GPIOHWD(object):
 
         if isDetected is True:                     
             while(time.time() - curTime <= 1):
-                time.sleep(0.1)
+                time.sleep(0.2)
                 secondEventDetected = GPIO.event_detected(channel)
                 if secondEventDetected is True:
                     return ButtonState.DOUBLE_PRESSED                

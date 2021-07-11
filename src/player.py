@@ -122,7 +122,14 @@ class Player(object):
 
     def prevSong(self):
         print("prev song")
-        self.client.previous()
+        try:
+            self.client.previous()
+        except CommandError:
+            print("mpc command error")
+            print(traceback.print_exc()) 
+        except SocketError:
+            print("mpd connection error")
+            print(traceback.print_exc()) 
 
 
     def seekCur(self, time):
@@ -130,7 +137,14 @@ class Player(object):
         curSongPos = float(self.getStatus()["elapsed"])
         print(curSongPos)
         curSongPos += time 
-        self.client.seekcur(curSongPos)
+        try:
+            self.client.seekcur(curSongPos)
+        except CommandError:
+            print("mpc command error")
+            print(traceback.print_exc()) 
+        except SocketError:
+            print("mpd connection error")
+            print(traceback.print_exc()) 
 
     def currentSongInfo(self) -> dict:
         try:
