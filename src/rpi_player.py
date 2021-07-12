@@ -100,13 +100,13 @@ def main():
             songsCount = player.getStats()["songs"]
 
             if songsCount == 0:
-                if noSongsLed is False & prevSongsLed is True:
+                if noSongsLed is False and prevSongsLed is True:
                     print("no songs found")
                     hwd.flashLed(hwd.statusLed, 0.5, 50)
                     noSongsLed = True
                     prevSongsLed = False
             else:
-                if noSongsLed is True & prevSongsLed is False:
+                if noSongsLed is True and prevSongsLed is False:
                     print("songs found")
                     hwd.stopFlash(hwd.statusLed)
                     noSongsLed = False
