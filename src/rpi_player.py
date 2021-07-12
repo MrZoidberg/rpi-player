@@ -149,7 +149,7 @@ def main():
                     #hwd.clearButtonState(hwd.volumeDownButton)
                 btnStatus = ButtonState.NOT_PRESSED
 
-            time.sleep(0.1)
+            time.sleep(0.2)
 
         input("Press Enter to exit...")
     except KeyboardInterrupt:
