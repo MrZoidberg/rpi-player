@@ -1,8 +1,7 @@
 from mpd import (MPDClient, CommandError)
 from socket import error as SocketError
 import traceback
-import time
-import os
+
 
 class Player(object):
 
@@ -41,17 +40,17 @@ class Player(object):
             return self.client.status()["state"]
         except CommandError:
             print("mpc command error")
-            print(traceback.print_exc()) 
+            print(traceback.print_exc())
         except SocketError:
             print("mpd connection error")
             print(traceback.print_exc())
-    
+
     def getStatus(self) -> dict:
         try:
             return self.client.status()
         except CommandError:
             print("mpc command error")
-            print(traceback.print_exc()) 
+            print(traceback.print_exc())
         except SocketError:
             print("mpd connection error")
             print(traceback.print_exc())
@@ -61,12 +60,12 @@ class Player(object):
             return self.client.stats()
         except CommandError:
             print("mpc command error")
-            print(traceback.print_exc()) 
+            print(traceback.print_exc())
         except SocketError:
             print("mpd connection error")
             print(traceback.print_exc())
-    
-    def play(self):        
+
+    def play(self):
         try:
             state = self.client.status()["state"]
             if state == "stop" or state == "pause":
@@ -74,12 +73,12 @@ class Player(object):
                 self.client.play()
         except CommandError:
             print("mpc command error")
-            print(traceback.print_exc()) 
+            print(traceback.print_exc())
         except SocketError:
             print("mpd connection error")
             print(traceback.print_exc())
 
-    def playPause(self):        
+    def playPause(self):
         try:
             state = self.client.status()["state"]
             if state == "stop" or state == "pause":
@@ -90,7 +89,7 @@ class Player(object):
                 self.client.pause()
         except CommandError:
             print("mpc command error")
-            print(traceback.print_exc()) 
+            print(traceback.print_exc())
         except SocketError:
             print("mpd connection error")
             print(traceback.print_exc())
@@ -115,10 +114,10 @@ class Player(object):
             self.client.next()
         except CommandError:
             print("mpc command error")
-            print(traceback.print_exc()) 
+            print(traceback.print_exc())
         except SocketError:
             print("mpd connection error")
-            print(traceback.print_exc()) 
+            print(traceback.print_exc())
 
     def prevSong(self):
         print("prev song")
@@ -126,39 +125,37 @@ class Player(object):
             self.client.previous()
         except CommandError:
             print("mpc command error")
-            print(traceback.print_exc()) 
+            print(traceback.print_exc())
         except SocketError:
             print("mpd connection error")
-            print(traceback.print_exc()) 
-
+            print(traceback.print_exc())
 
     def seekCur(self, time):
         print("seek")
         curSongPos = float(self.getStatus()["elapsed"])
         print(curSongPos)
-        curSongPos += time 
+        curSongPos += time
         try:
             self.client.seekcur(curSongPos)
         except CommandError:
             print("mpc command error")
-            print(traceback.print_exc()) 
+            print(traceback.print_exc())
         except SocketError:
             print("mpd connection error")
-            print(traceback.print_exc()) 
+            print(traceback.print_exc())
 
     def currentSongInfo(self) -> dict:
         try:
             return self.client.currentsong()
         except CommandError:
             print("mpc command error")
-            print(traceback.print_exc()) 
+            print(traceback.print_exc())
         except SocketError:
             print("mpd connection error")
-            print(traceback.print_exc())   
+            print(traceback.print_exc())
 
-
-    #def seekCur(self, delta):
-        #print("seek current. delta: " + delta)
-        #self.client.seekcur(delta)
-        #os.system("mpc seekthrough " + delta)
-        #time.sleep(2)
+    # def seekCur(self, delta):
+        # print("seek current. delta: " + delta)
+        # self.client.seekcur(delta)
+        # os.system("mpc seekthrough " + delta)
+        # time.sleep(2)

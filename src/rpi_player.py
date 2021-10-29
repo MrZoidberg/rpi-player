@@ -14,13 +14,13 @@ def checkForUSBDevice(driveName):
         for device in context.list_devices(subsystem='block',
                                            DEVTYPE='partition'):
             if device.get('ID_FS_LABEL') == driveName:
-                    res = device.device_node
+                res = device.device_node
         return res
     except Exception:
         return res
 
 
-def loadMusic(device, mountPoint, musicDir, tagCacheDir):        
+def loadMusic(device, mountPoint, musicDir, tagCacheDir):
     os.system("mkdir -p "+mountPoint)
     os.system("mount "+device+" "+mountPoint)
     os.system("/etc/init.d/mpd stop")
@@ -35,16 +35,16 @@ def loadMusic(device, mountPoint, musicDir, tagCacheDir):
 
 
 def main():
-    hwd = None    
-    print ("====> RPi player start")
+    hwd = None
+    print("====> RPi player start")
 
     try:
         # parent = current_thread()
         hwd = GPIOHWD()
         driveName = "AUDIO"
         with open('config.json') as json_file:
-            data = json.load(json_file)       
-            driveName = data['driveLabel']  
+            data = json.load(json_file)
+            driveName = data['driveLabel']
             print("use drive with label", driveName)
             hwd.setStatusLed(data['gpio']['statusLed'])
             hwd.setPowerLed(data['gpio']['powerLed'])
@@ -54,13 +54,12 @@ def main():
             hwd.setVolumeDownButton(data['gpio']['volumeDownButton'])
             hwd.setup()
 
-        
         hwd.flashLed(hwd.powerLed, 2, 50)
         hwd.flashLed(hwd.statusLed, 2, 50)
 
         player = Player()
         player.setPort('6600')
-        player.setHost('localhost')        
+        player.setHost('localhost')
         player.connectMPD()
 
         time.sleep(2)
@@ -71,7 +70,7 @@ def main():
 
         noSongsLed = False
         prevSongsLed = False
-        playPressed = 0
+        # playPressed = 0
         playButtonState = ButtonState.NOT_PRESSED
         nextButtonState = ButtonState.NOT_PRESSED
         btnStatus = ButtonState.NOT_PRESSED
@@ -82,7 +81,7 @@ def main():
             if pendrive != "":
                 print("new music detected on drive", pendrive)
                 hwd.flashLed(hwd.statusLed, 2, 50)
-                #player.stop()
+                # player.stop()
                 player.disconnect()
                 loadMusic(pendrive, "/mnt/usb/", "/var/lib/mpd/music/",
                                     "/var/lib/mpd/tag_cache")
@@ -112,19 +111,19 @@ def main():
                     noSongsLed = False
                     prevSongsLed = True
 
-                ### Next button
-                
+                # Next button
+
                 nextButtonState = hwd.isButtonPressed(hwd.nextButton, True)
-                if nextButtonState is ButtonState.PRESSED:
-                    player.nextSong()
                 if nextButtonState is ButtonState.DOUBLE_PRESSED:
                     player.prevSong()
-                    #hwd.clearButtonState(hwd.nextButton)
+                if nextButtonState is ButtonState.PRESSED:
+                    player.nextSong()
+                    # hwd.clearButtonState(hwd.nextButton)
                 nextButtonState = ButtonState.NOT_PRESSED
 
-                ### Play button
+                # Play button
 
-                playButtonState = hwd.isButtonPressed(hwd.playButton, True)
+                playButtonState = hwd.isButtonPressed(hwd.playButton, False)
                 if playButtonState is ButtonState.DOUBLE_PRESSED:
                     player.seekCur(-15)
                 if playButtonState is ButtonState.PRESSED:
@@ -133,20 +132,20 @@ def main():
 
                 hwd.updateLed(hwd.statusLed, player.getState() == "play")
 
-                ### Volume up
+                # Volume up
 
                 btnStatus = hwd.isButtonPressed(hwd.volumeUpButton, False)
                 if btnStatus is ButtonState.PRESSED:
                     player.increaseVolume(5)
-                    #hwd.clearButtonState(hwd.volumeUpButton)
+                    # hwd.clearButtonState(hwd.volumeUpButton)
                 btnStatus = ButtonState.NOT_PRESSED
 
-                ### Volume down
+                # Volume down
 
                 btnStatus = hwd.isButtonPressed(hwd.volumeDownButton, False)
                 if btnStatus is ButtonState.PRESSED:
                     player.decreaseVolume(5)
-                    #hwd.clearButtonState(hwd.volumeDownButton)
+                    # hwd.clearButtonState(hwd.volumeDownButton)
                 btnStatus = ButtonState.NOT_PRESSED
 
             time.sleep(0.2)
@@ -158,6 +157,7 @@ def main():
         traceback.print_exc()
 
     hwd.cleanup()
+
 
 if __name__ == '__main__':
     main()

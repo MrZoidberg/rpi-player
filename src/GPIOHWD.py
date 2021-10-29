@@ -4,6 +4,7 @@ from enum import Flag, auto
 
 BUTTON_PRESS_DELTA = 1
 
+
 class ButtonState(Flag):
     NOT_PRESSED = auto()
     PRESSED = auto()
@@ -11,7 +12,7 @@ class ButtonState(Flag):
     AT_LEAST_TWICE_PRESSED = PRESSED | DOUBLE_PRESSED
 
 
-class GPIOHWD(object): 
+class GPIOHWD(object):
 
     def __init__(self,):
         print("GPIO version: " + GPIO.VERSION)
@@ -22,7 +23,7 @@ class GPIOHWD(object):
         self._volumeDownButton = -1
         self._nextButton = -1
         self._flashes = dict()
-        self._times = dict.fromkeys(range(1,41), 0)
+        self._times = dict.fromkeys(range(1, 41), 0)
 
     @property
     def statusLed(self):
@@ -49,27 +50,27 @@ class GPIOHWD(object):
         return self._nextButton
 
     def setStatusLed(self, channel):
-        print("status led is set to ",channel)
+        print("status led is set to ", channel)
         self._statusLed = channel
 
     def setPowerLed(self, channel):
-        print("power led is set to ",channel)
+        print("power led is set to ", channel)
         self._powerLed = channel
 
     def setPlayButton(self, channel):
-        print("play button is set to ",channel)
+        print("play button is set to ", channel)
         self._playButton = channel
 
     def setVolumeDownButton(self, channel):
-        print("volume down button is set to ",channel)
+        print("volume down button is set to ", channel)
         self._volumeDownButton = channel
 
     def setVolumeUpButton(self, channel):
-        print("volume up button is set to ",channel)
+        print("volume up button is set to ", channel)
         self._volumeUpButton = channel
 
     def setNextButton(self, channel):
-        print("volume next button is set to ",channel)
+        print("volume next button is set to ", channel)
         self._nextButton = channel
 
     def flashLed(self, channel, speed, time):
@@ -95,22 +96,25 @@ class GPIOHWD(object):
 
     def isButtonPressed(self, channel, supportDoublePress):
         isDetected = GPIO.event_detected(channel)
-        curTime = time.time()         
-        
+        curTime = time.time()
+
         if isDetected is False:
-            return ButtonState.NOT_PRESSED        
- 
+            return ButtonState.NOT_PRESSED
+
         if supportDoublePress is False:
-            print("isButtonPressed " + str(channel) + " detected: ButtonState.PRESSED")
+            print("isButtonPressed " + str(channel) +
+                  " detected: ButtonState.PRESSED")
             return ButtonState.PRESSED
-                     
+
         while(time.time() - curTime <= 1):
             time.sleep(0.2)
             secondEventDetected = GPIO.event_detected(channel)
             if secondEventDetected is True:
-                print("isButtonPressed " + str(channel) + " detected: ButtonState.DOUBLE_PRESSED")
-                return ButtonState.DOUBLE_PRESSED                
-        print("isButtonPressed " + str(channel) + " detected: ButtonState.PRESSED")
+                print("isButtonPressed " + str(channel) +
+                      " detected: ButtonState.DOUBLE_PRESSED")
+                return ButtonState.DOUBLE_PRESSED
+        print("isButtonPressed " + str(channel) +
+              " detected: ButtonState.PRESSED")
         return ButtonState.PRESSED
 
     def clearButtonState(self, channel):
@@ -129,8 +133,10 @@ class GPIOHWD(object):
         GPIO.setup(buttons, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.add_event_detect(self._playButton, GPIO.RISING, bouncetime=200)
         GPIO.add_event_detect(self._nextButton, GPIO.RISING, bouncetime=200)
-        GPIO.add_event_detect(self._volumeUpButton, GPIO.RISING, bouncetime=200)
-        GPIO.add_event_detect(self._volumeDownButton, GPIO.RISING, bouncetime=200)
+        GPIO.add_event_detect(self._volumeUpButton,
+                              GPIO.RISING, bouncetime=200)
+        GPIO.add_event_detect(self._volumeDownButton,
+                              GPIO.RISING, bouncetime=200)
 
         GPIO.output(self._powerLed, GPIO.HIGH)
         GPIO.output(self._statusLed, GPIO.LOW)
