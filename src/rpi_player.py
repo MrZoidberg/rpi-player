@@ -69,8 +69,7 @@ def main():
         hwd.stopFlash(hwd.powerLed)
         hwd.stopFlash(hwd.statusLed)
         hwd.stopFlash(hwd.systemLed)
-
-        hwd.updateLed(hwd.powerLed, True)
+        
         print("setup complete")
 
         noSongsLed = False
@@ -81,6 +80,8 @@ def main():
         btnStatus = ButtonState.NOT_PRESSED
 
         while(True):
+            hwd.updateLed(hwd.powerLed, True)
+
             pendrive = checkForUSBDevice(driveName)
 
             if pendrive != "":

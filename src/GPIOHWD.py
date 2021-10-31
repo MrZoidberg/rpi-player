@@ -33,7 +33,7 @@ class GPIOHWD(object):
     @property
     def powerLed(self):
         return self._powerLed
-    
+
     @property
     def systemLed(self):
         return self._systemLed
@@ -139,7 +139,7 @@ class GPIOHWD(object):
                    self._volumeDownButton, self._nextButton]
 
         GPIO.setup(leds, GPIO.OUT)
-        GPIO.setup(buttons, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.setup(buttons, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.add_event_detect(self._playButton, GPIO.RISING, bouncetime=200)
         GPIO.add_event_detect(self._nextButton, GPIO.RISING, bouncetime=200)
         GPIO.add_event_detect(self._volumeUpButton,
