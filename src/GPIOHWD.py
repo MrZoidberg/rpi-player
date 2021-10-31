@@ -119,6 +119,7 @@ class GPIOHWD(object):
 
         if detectedTime != lastTime and lastTime - detectedTime < 2:
             self._times[channel] = 0
+            self._detectedPins[channel] = 0
             print("isButtonPressed " + str(channel) +
                   " detected: ButtonState.DOUBLE_PRESSED")
             return ButtonState.DOUBLE_PRESSED
