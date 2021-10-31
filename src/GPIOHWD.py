@@ -137,6 +137,13 @@ class GPIOHWD(object):
         self._volumeUpFunction = volumeUpFunction
         self._volumeDownFunction = volumeDownFunction
 
+        def volumeCallback(channel):
+            print("Volume callback on channel " + str(channel))
+            if channel == self._volumeDownButton:
+                self._volumeDownFunction()
+            if channel == self._volumeUpButton:
+                self._volumeUpFunction()
+
         GPIO.setmode(GPIO.BOARD)
         leds = [self._powerLed, self._statusLed, self._systemLed]
         volumeButtons = [self._volumeUpButton, self._volumeDownButton]
@@ -148,19 +155,9 @@ class GPIOHWD(object):
         GPIO.add_event_detect(self._playButton, GPIO.RISING, bouncetime=500)
         GPIO.add_event_detect(self._nextButton, GPIO.RISING, bouncetime=500)
         GPIO.add_event_detect(self._volumeUpButton,
-                              GPIO.RISING, bouncetime=200)
+                              GPIO.RISING, bouncetime=200, callback=volumeCallback)
         GPIO.add_event_detect(self._volumeDownButton,
-                              GPIO.RISING, bouncetime=200)
-
-        def volumeCallback(channel):
-            print("Volume callback on channel " + str(channel))
-            if channel == self._volumeDownButton:
-                self._volumeDownFunction()
-            if channel == self._volumeUpButton:
-                self._volumeUpFunction()
-
-        GPIO.add_event_callback(self._volumeUpButton, volumeCallback)
-        GPIO.add_event_callback(self._volumeDownButton, volumeCallback)
+                              GPIO.RISING, bouncetime=200, callback=volumeCallback)       
 
         GPIO.output(self._powerLed, GPIO.HIGH)
         GPIO.output(self._systemLed, GPIO.HIGH)
