@@ -143,7 +143,7 @@ class GPIOHWD(object):
         controlButtons = [self._playButton, self._nextButton]
 
         GPIO.setup(leds, GPIO.OUT)
-        GPIO.setup(controlButtons, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.setup(controlButtons, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(volumeButtons, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.add_event_detect(self._playButton, GPIO.RISING, bouncetime=500)
         GPIO.add_event_detect(self._nextButton, GPIO.RISING, bouncetime=500)
