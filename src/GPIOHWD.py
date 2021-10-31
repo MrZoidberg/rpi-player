@@ -115,13 +115,19 @@ class GPIOHWD(object):
                   " detected: ButtonState.PRESSED")
             return ButtonState.PRESSED
 
-        while(time.time() - curTime <= 1):
-            time.sleep(0.2)
-            secondEventDetected = GPIO.event_detected(channel)
-            if secondEventDetected is True:
-                print("isButtonPressed " + str(channel) +
-                      " detected: ButtonState.DOUBLE_PRESSED")
-                return ButtonState.DOUBLE_PRESSED
+        lastTime = self._times[channel]
+        self._times[channel] = curTime
+        if lastTime - curTime < 2:
+            print("isButtonPressed " + str(channel) +
+                  " detected: ButtonState.DOUBLE_PRESSED")
+            return ButtonState.DOUBLE_PRESSED
+        # while(time.time() - curTime <= 1):
+        #     time.sleep(0.2)
+        #     secondEventDetected = GPIO.event_detected(channel)
+        #     if secondEventDetected is True:
+        #         print("isButtonPressed " + str(channel) +
+        #               " detected: ButtonState.DOUBLE_PRESSED")
+        #         return ButtonState.DOUBLE_PRESSED
         print("isButtonPressed " + str(channel) +
               " detected: ButtonState.PRESSED")
         return ButtonState.PRESSED
@@ -152,12 +158,12 @@ class GPIOHWD(object):
         GPIO.setup(leds, GPIO.OUT)
         GPIO.setup(controlButtons, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(volumeButtons, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(self._playButton, GPIO.RISING, bouncetime=500)
-        GPIO.add_event_detect(self._nextButton, GPIO.RISING, bouncetime=500)
+        GPIO.add_event_detect(self._playButton, GPIO.RISING, bouncetime=300)
+        GPIO.add_event_detect(self._nextButton, GPIO.RISING, bouncetime=300)
         GPIO.add_event_detect(self._volumeUpButton,
                               GPIO.RISING, bouncetime=200, callback=volumeCallback)
         GPIO.add_event_detect(self._volumeDownButton,
-                              GPIO.RISING, bouncetime=200, callback=volumeCallback)       
+                              GPIO.RISING, bouncetime=200, callback=volumeCallback)
 
         GPIO.output(self._powerLed, GPIO.HIGH)
         GPIO.output(self._systemLed, GPIO.HIGH)
