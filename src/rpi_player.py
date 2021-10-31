@@ -52,24 +52,31 @@ def main():
             hwd.setNextButton(data['gpio']['nextButton'])
             hwd.setPlayButton(data['gpio']['playButton'])
             hwd.setVolumeUpButton(data['gpio']['volumeUpButton'])
-            hwd.setVolumeDownButton(data['gpio']['volumeDownButton'])
-            hwd.setup()
-
-        hwd.flashLed(hwd.powerLed, 2, 50)
-        hwd.flashLed(hwd.systemLed, 2, 50)
-        hwd.flashLed(hwd.statusLed, 2, 50)
+            hwd.setVolumeDownButton(data['gpio']['volumeDownButton'])            
 
         player = Player()
         player.setPort('6600')
         player.setHost('localhost')
         player.connectMPD()
 
+        def volumeUp():
+            player.increaseVolume(5)
+
+        def volumeDown():
+            player.decreaseVolume(5)
+
+        hwd.setup(volumeUp, volumeDown)
+
+        hwd.flashLed(hwd.powerLed, 2, 50)
+        hwd.flashLed(hwd.systemLed, 2, 50)
+        hwd.flashLed(hwd.statusLed, 2, 50) 
+
         time.sleep(3)
 
         hwd.stopFlash(hwd.powerLed)
         hwd.stopFlash(hwd.statusLed)
         hwd.stopFlash(hwd.systemLed)
-        
+
         print("setup complete")
 
         noSongsLed = False
@@ -140,19 +147,19 @@ def main():
 
                 # Volume up
 
-                btnStatus = hwd.isButtonPressed(hwd.volumeUpButton, False)
-                if btnStatus is ButtonState.PRESSED:
-                    player.increaseVolume(5)
-                    # hwd.clearButtonState(hwd.volumeUpButton)
-                btnStatus = ButtonState.NOT_PRESSED
+                # btnStatus = hwd.isButtonPressed(hwd.volumeUpButton, False)
+                # if btnStatus is ButtonState.PRESSED:
+                #     player.increaseVolume(5)
+                #     # hwd.clearButtonState(hwd.volumeUpButton)
+                # btnStatus = ButtonState.NOT_PRESSED
 
-                # Volume down
+                # # Volume down
 
-                btnStatus = hwd.isButtonPressed(hwd.volumeDownButton, False)
-                if btnStatus is ButtonState.PRESSED:
-                    player.decreaseVolume(5)
-                    # hwd.clearButtonState(hwd.volumeDownButton)
-                btnStatus = ButtonState.NOT_PRESSED
+                # btnStatus = hwd.isButtonPressed(hwd.volumeDownButton, False)
+                # if btnStatus is ButtonState.PRESSED:
+                #     player.decreaseVolume(5)
+                #     # hwd.clearButtonState(hwd.volumeDownButton)
+                # btnStatus = ButtonState.NOT_PRESSED
 
             time.sleep(0.2)
 
