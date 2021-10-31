@@ -25,6 +25,7 @@ class GPIOHWD(object):
         self._nextButton = -1
         self._flashes = dict()
         self._times = dict.fromkeys(range(1, 41), 0)
+        self._detectedPins = dict.fromkeys(range(1, 41), 0)
 
     @property
     def statusLed(self):
@@ -104,23 +105,32 @@ class GPIOHWD(object):
             GPIO.output(channel, GPIO.HIGH)
 
     def isButtonPressed(self, channel, supportDoublePress):
-        isDetected = GPIO.event_detected(channel)
-        curTime = time.time()
-
-        if isDetected is False:
+        if supportDoublePress is False:
+            isDetected = GPIO.event_detected(channel)
+            if isDetected is True:
+                print("isButtonPressed " + str(channel) +
+                      " detected: ButtonState.PRESSED")
+                return ButtonState.PRESSED
             return ButtonState.NOT_PRESSED
 
-        if supportDoublePress is False:
+        curTime = time.time()
+        detectedTime = self._detectedPins[channel]
+        lastTime = self._times[channel]
+
+        if detectedTime != lastTime & lastTime - detectedTime < 2:
+            self._times[channel] = 0
+            print("isButtonPressed " + str(channel) +
+                  " detected: ButtonState.DOUBLE_PRESSED")
+            return ButtonState.DOUBLE_PRESSED
+
+        if curTime - detectedTime < 1:
+            self._detectedPins[channel] = 0
+            self._times[channel] = detectedTime
             print("isButtonPressed " + str(channel) +
                   " detected: ButtonState.PRESSED")
             return ButtonState.PRESSED
 
-        lastTime = self._times[channel]
-        self._times[channel] = curTime
-        if lastTime - curTime < 2:
-            print("isButtonPressed " + str(channel) +
-                  " detected: ButtonState.DOUBLE_PRESSED")
-            return ButtonState.DOUBLE_PRESSED
+        # self._times[channel] = curTime
         # while(time.time() - curTime <= 1):
         #     time.sleep(0.2)
         #     secondEventDetected = GPIO.event_detected(channel)
@@ -128,9 +138,7 @@ class GPIOHWD(object):
         #         print("isButtonPressed " + str(channel) +
         #               " detected: ButtonState.DOUBLE_PRESSED")
         #         return ButtonState.DOUBLE_PRESSED
-        print("isButtonPressed " + str(channel) +
-              " detected: ButtonState.PRESSED")
-        return ButtonState.PRESSED
+        return ButtonState.NOT_PRESSED
 
     def clearButtonState(self, channel):
         self._times[channel] = 0
@@ -150,6 +158,10 @@ class GPIOHWD(object):
             if channel == self._volumeUpButton:
                 self._volumeUpFunction()
 
+        def buttonsCallback(channel):
+            print("Button callback on channel " + str(channel))
+            self._detectedPins[channel] = time.time()
+
         GPIO.setmode(GPIO.BOARD)
         leds = [self._powerLed, self._statusLed, self._systemLed]
         volumeButtons = [self._volumeUpButton, self._volumeDownButton]
@@ -158,8 +170,10 @@ class GPIOHWD(object):
         GPIO.setup(leds, GPIO.OUT)
         GPIO.setup(controlButtons, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(volumeButtons, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(self._playButton, GPIO.RISING, bouncetime=300)
-        GPIO.add_event_detect(self._nextButton, GPIO.RISING, bouncetime=300)
+        GPIO.add_event_detect(self._playButton, GPIO.RISING,
+                              callback=buttonsCallback, bouncetime=300)
+        GPIO.add_event_detect(self._nextButton, GPIO.RISING,
+                              callback=buttonsCallback, bouncetime=300)
         GPIO.add_event_detect(self._volumeUpButton,
                               GPIO.RISING, bouncetime=200, callback=volumeCallback)
         GPIO.add_event_detect(self._volumeDownButton,
