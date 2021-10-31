@@ -48,6 +48,7 @@ def main():
             print("use drive with label", driveName)
             hwd.setStatusLed(data['gpio']['statusLed'])
             hwd.setPowerLed(data['gpio']['powerLed'])
+            hwd.setSystemLed(data['gpio']['systemLed'])
             hwd.setNextButton(data['gpio']['nextButton'])
             hwd.setPlayButton(data['gpio']['playButton'])
             hwd.setVolumeUpButton(data['gpio']['volumeUpButton'])
@@ -55,6 +56,7 @@ def main():
             hwd.setup()
 
         hwd.flashLed(hwd.powerLed, 2, 50)
+        hwd.flashLed(hwd.systemLed, 2, 50)
         hwd.flashLed(hwd.statusLed, 2, 50)
 
         player = Player()
@@ -62,9 +64,12 @@ def main():
         player.setHost('localhost')
         player.connectMPD()
 
-        time.sleep(2)
+        time.sleep(3)
+
         hwd.stopFlash(hwd.powerLed)
         hwd.stopFlash(hwd.statusLed)
+        hwd.stopFlash(hwd.systemLed)
+
         hwd.updateLed(hwd.powerLed, True)
         print("setup complete")
 
@@ -101,13 +106,13 @@ def main():
             if songsCount == 0:
                 if noSongsLed is False and prevSongsLed is True:
                     print("no songs found")
-                    hwd.flashLed(hwd.statusLed, 0.5, 50)
+                    hwd.flashLed(hwd.systemLed, 0.5, 50)
                     noSongsLed = True
                     prevSongsLed = False
             else:
                 if noSongsLed is True and prevSongsLed is False:
                     print("songs found")
-                    hwd.stopFlash(hwd.statusLed)
+                    hwd.stopFlash(hwd.systemLed)
                     noSongsLed = False
                     prevSongsLed = True
 

@@ -18,6 +18,7 @@ class GPIOHWD(object):
         print("GPIO version: " + GPIO.VERSION)
         self._statusLed = -1
         self._powerLed = -1
+        self._systemLed = -1
         self._playButton = -1
         self._volumeUpButton = -1
         self._volumeDownButton = -1
@@ -32,6 +33,10 @@ class GPIOHWD(object):
     @property
     def powerLed(self):
         return self._powerLed
+    
+    @property
+    def systemLed(self):
+        return self._systemLed
 
     @property
     def playButton(self):
@@ -48,6 +53,10 @@ class GPIOHWD(object):
     @property
     def nextButton(self):
         return self._nextButton
+
+    def setSystemLed(self, channel):
+        print("system led is set to ", channel)
+        self._systemLed = channel
 
     def setStatusLed(self, channel):
         print("status led is set to ", channel)
@@ -88,7 +97,7 @@ class GPIOHWD(object):
             pwm.stop()
 
     def updateLed(self, channel, turnOn):
-        #print("led " + str(led) + " is set to " + str(turnOn))
+        # print("led " + str(led) + " is set to " + str(turnOn))
         if turnOn is True:
             GPIO.output(channel, GPIO.LOW)
         else:
@@ -125,7 +134,7 @@ class GPIOHWD(object):
 
     def setup(self):
         GPIO.setmode(GPIO.BOARD)
-        leds = [self._powerLed, self._statusLed]
+        leds = [self._powerLed, self._statusLed, self._systemLed]
         buttons = [self._playButton, self._volumeUpButton,
                    self._volumeDownButton, self._nextButton]
 
@@ -139,7 +148,8 @@ class GPIOHWD(object):
                               GPIO.RISING, bouncetime=200)
 
         GPIO.output(self._powerLed, GPIO.HIGH)
-        GPIO.output(self._statusLed, GPIO.LOW)
+        GPIO.output(self._systemLed, GPIO.HIGH)
+        GPIO.output(self._statusLed, GPIO.HIGH)
 
     def cleanup(self):
         GPIO.cleanup()
